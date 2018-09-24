@@ -1,5 +1,5 @@
 {
-    "name": "sprintcube/SendGrid",
+    "name": "sprintcube/sendgrid",
     "description": "SendGrid plugin for CakePHP 3 - Send emails using SendGrid API",
     "type": "cakephp-plugin",
     "license": "MIT",
