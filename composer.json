@@ -1,0 +1,49 @@
+{
+    "name": "sprintcube/SendGrid",
+    "description": "SendGrid plugin for CakePHP 3 - Send emails using SendGrid API",
+    "type": "cakephp-plugin",
+    "license": "MIT",
+    "keywords": [
+        "CakePHP",
+        "Email",
+        "SendGrid"
+    ],
+    "authors": [
+        {
+            "name": "SprintCube",
+            "homepage": "https://www.sprintcube.com",
+            "role": "Author"
+        },
+        {
+            "name": "Narendra Vaghela",
+            "homepage": "http://www.narendravaghela.com",
+            "role": "Author"
+        },
+        {
+            "name": "Community",
+            "homepage": "https://github.com/sprintcube/cakephp-sendgrid/graphs/contributors"
+        }
+    ],
+    "support": {
+        "source": "https://github.com/sprintcube/cakephp-sendgrid",
+        "issues": "https://github.com/sprintcube/cakephp-sendgrid/issues"
+    },
+    "require": {
+        "cakephp/cakephp": "^3.5"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5.7.14|^6.0",
+        "cakephp/cakephp-codesniffer": "^3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "SendGrid\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SendGrid\\Test\\": "tests/",
+            "Cake\\Test\\": "vendor/cakephp/cakephp/tests/"
+        }
+    }
+}
