@@ -67,6 +67,8 @@ class SendGridTransportTest extends TestCase
         $email->setProfile(['transport' => 'sendgrid']);
         $res = $email->setFrom('from@example.com')
             ->setTo('to@example.com')
+            ->setCc('cc@example.com')
+            ->setBcc('bcc@example.com')
             ->send();
 
         $reqParams = $res['reqParams'];
@@ -78,6 +80,12 @@ class SendGridTransportTest extends TestCase
         $this->assertObjectHasAttribute('to', $reqParams['personalizations'][0]);
         $this->assertArrayHasKey('email', $reqParams['personalizations'][0]->to[0]);
         $this->assertEquals('to@example.com', $reqParams['personalizations'][0]->to[0]['email']);
+        $this->assertObjectHasAttribute('cc', $reqParams['personalizations'][0]);
+        $this->assertArrayHasKey('email', $reqParams['personalizations'][0]->cc[0]);
+        $this->assertEquals('cc@example.com', $reqParams['personalizations'][0]->cc[0]['email']);
+        $this->assertObjectHasAttribute('bcc', $reqParams['personalizations'][0]);
+        $this->assertArrayHasKey('email', $reqParams['personalizations'][0]->bcc[0]);
+        $this->assertEquals('bcc@example.com', $reqParams['personalizations'][0]->bcc[0]['email']);
     }
 
     public function testAttachments()
