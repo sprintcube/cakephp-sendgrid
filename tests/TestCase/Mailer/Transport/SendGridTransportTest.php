@@ -29,12 +29,7 @@ class SendGridTransportTest extends TestCase
     public function testTemplate()
     {
         Email::dropTransport('sendgrid');
-        Email::setConfigTransport(
-            'sendgrid', [
-            'className' => 'SendGrid.SendGrid',
-            'apiKey' => '123'
-            ]
-        );
+        Email::setConfigTransport('sendgrid', ['className' => 'SendGrid.SendGrid', 'apiKey' => '123']);
 
         $email = new Email();
         $email->setProfile(['transport' => 'sendgrid']);
@@ -50,12 +45,7 @@ class SendGridTransportTest extends TestCase
     public function testSchedule()
     {
         Email::dropTransport('sendgrid');
-        Email::setConfigTransport(
-            'sendgrid', [
-            'className' => 'SendGrid.SendGrid',
-            'apiKey' => '123'
-            ]
-        );
+        Email::setConfigTransport('sendgrid', ['className' => 'SendGrid.SendGrid', 'apiKey' => '123']);
 
         $email = new Email();
         $email->setProfile(['transport' => 'sendgrid']);
@@ -71,12 +61,7 @@ class SendGridTransportTest extends TestCase
     public function testAddresses()
     {
         Email::dropTransport('sendgrid');
-        Email::setConfigTransport(
-            'sendgrid', [
-            'className' => 'SendGrid.SendGrid',
-            'apiKey' => '123'
-            ]
-        );
+        Email::setConfigTransport('sendgrid', ['className' => 'SendGrid.SendGrid', 'apiKey' => '123']);
 
         $email = new Email();
         $email->setProfile(['transport' => 'sendgrid']);
@@ -98,12 +83,7 @@ class SendGridTransportTest extends TestCase
     public function testAttachments()
     {
         Email::dropTransport('sendgrid');
-        Email::setConfigTransport(
-            'sendgrid', [
-            'className' => 'SendGrid.SendGrid',
-            'apiKey' => '123'
-            ]
-        );
+        Email::setConfigTransport('sendgrid', ['className' => 'SendGrid.SendGrid', 'apiKey' => '123']);
 
         $email = new Email();
         $email->setProfile(['transport' => 'sendgrid']);
@@ -127,12 +107,7 @@ class SendGridTransportTest extends TestCase
     public function testInlineAttachments()
     {
         Email::dropTransport('sendgrid');
-        Email::setConfigTransport(
-            'sendgrid', [
-            'className' => 'SendGrid.SendGrid',
-            'apiKey' => '123'
-            ]
-        );
+        Email::setConfigTransport('sendgrid', ['className' => 'SendGrid.SendGrid', 'apiKey' => '123']);
 
         $email = new Email();
         $email->setProfile(['transport' => 'sendgrid']);
@@ -160,12 +135,7 @@ class SendGridTransportTest extends TestCase
     public function testCustomHeaders()
     {
         Email::dropTransport('sendgrid');
-        Email::setConfigTransport(
-            'sendgrid', [
-            'className' => 'SendGrid.SendGrid',
-            'apiKey' => '123'
-            ]
-        );
+        Email::setConfigTransport('sendgrid', ['className' => 'SendGrid.SendGrid', 'apiKey' => '123']);
 
         $email = new Email();
         $email->setProfile(['transport' => 'sendgrid']);
@@ -188,12 +158,7 @@ class SendGridTransportTest extends TestCase
         $this->expectException('SendGrid\Mailer\Exception\SendGridApiException');
 
         Email::dropTransport('sendgrid');
-        Email::setConfigTransport(
-            'sendgrid', [
-            'className' => 'SendGrid.SendGrid',
-            'apiKey' => ''
-            ]
-        );
+        Email::setConfigTransport('sendgrid', ['className' => 'SendGrid.SendGrid', 'apiKey' => '']);
 
         $email = new Email();
         $email->setProfile(['transport' => 'sendgrid']);
@@ -208,12 +173,7 @@ class SendGridTransportTest extends TestCase
     public function testInvalidKey()
     {
         Email::dropTransport('sendgrid');
-        Email::setConfigTransport(
-            'sendgrid', [
-            'className' => 'SendGrid.SendGrid',
-            'apiKey' => '123'
-            ]
-        );
+        Email::setConfigTransport('sendgrid', ['className' => 'SendGrid.SendGrid', 'apiKey' => '123']);
 
         $email = new Email();
         $email->setProfile(['transport' => 'sendgrid']);
