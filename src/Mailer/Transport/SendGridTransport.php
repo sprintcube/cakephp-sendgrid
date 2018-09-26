@@ -195,7 +195,6 @@ class SendGridTransport extends AbstractTransport
         } else {
             $this->_reqParams['from'] = (object)['email' => key($from)];
         }
-        $this->_emailParams['to'] = '';
 
         $emails = [];
         $to = $email->getTo();
