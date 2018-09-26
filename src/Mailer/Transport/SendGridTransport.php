@@ -103,7 +103,7 @@ class SendGridTransport extends AbstractTransport
                         'content' => base64_encode(file_get_contents($file['file'])),
                         'filename' => $name,
                         'disposition' => (!empty($file['contentId'])) ? 'inline' : 'attachment',
-                        'content_id' => (!empty($file['contentId'])) ?: ''
+                        'content_id' => (!empty($file['contentId'])) ? $file['contentId'] : ''
                 ];
             }
         }
