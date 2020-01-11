@@ -236,7 +236,7 @@ class SendGridTransport extends AbstractTransport
         $response = $http
             ->post("{$this->getConfig('apiEndpoint')}/mail/send", json_encode($this->_reqParams), $headers);
 
-        return $response->json;
+        return $response->getJson();
     }
 
     /**
