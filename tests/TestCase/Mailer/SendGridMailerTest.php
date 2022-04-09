@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace SendGrid\Test\TestCase\Mailer;
 
 use Cake\TestSuite\TestCase;
-use SendGrid\Mailer\SendGridMailer;
 
 /**
  * SendGrid\Mailer\SendGridMailer Test Case
