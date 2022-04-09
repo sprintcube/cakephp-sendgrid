@@ -6,7 +6,6 @@ namespace SendGrid\Test\TestCase\Mailer;
 
 use Cake\Mailer\TransportFactory;
 use Cake\TestSuite\TestCase;
-use SendGrid\Mailer\SendGridMailer;
 
 /**
  * SendGrid\Mailer\SendGridMailer Test Case
