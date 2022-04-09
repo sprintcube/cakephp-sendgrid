@@ -68,38 +68,33 @@ And create new delivery profile in `Email` settings.
 You can now simply use the CakePHP `Email` to send an email via SendGrid.
 
 ```php
-$email = new Email('sendgrid');
-        
+$email = new SendGridMailer();
 $email->setFrom(['you@yourdomain.com' => 'CakePHP SendGrid'])
     ->setTo('foo@example.com.com')
     ->addTo('bar@example.com')
     ->addCc('john@example.com')
-    ->setHeaders(['X-Custom' => 'headervalue'])
     ->setSubject('Email from CakePHP SendGrid plugin')
-    ->send('Message from CakePHP SendGrid plugin');
+    ->deliver('Message from CakePHP SendGrid plugin');
 ```
 
 That is it.
 
 ## Advance Use
-You can also use few more options to send email via SendGrid APIs. To do so, get the transport instance and call the appropriate methods before sending the email.
+You can also use few more options to send email via SendGrid APIs. To do so, just call the appropriate methods before sending the email.
 
 ### Custom Headers
 You can pass your own headers. It must be prefixed with "X-". Use the default `Email::setHeaders` method like,
 
 ```php
-$email = new Email('sendgrid');
-        
+$email = new SendGridMailer();
 $email->setFrom(['you@yourdomain.com' => 'CakePHP SendGrid'])
-    ->setSender('someone@example.com', 'Someone')
     ->setTo('foo@example.com.com')
-    ->addTo('bar@example.com')
     ->setHeaders([
         'X-Custom' => 'headervalue',
         'X-MyHeader' => 'myvalue'
     ])
     ->setSubject('Email from CakePHP SendGrid plugin')
-    ->send('Message from CakePHP SendGrid plugin');
+    ->deliver('Message from CakePHP SendGrid plugin');
 ```
 
 > When sending request, `X-` will be removed from header name e.g. X-MyHeader will become MyHeader
@@ -108,19 +103,16 @@ $email->setFrom(['you@yourdomain.com' => 'CakePHP SendGrid'])
 Set your attachments using `Email::setAttachments` method.
 
 ```php
-$email = new Email('sendgrid');
-        
+$email = new SendGridMailer();
 $email->setFrom(['you@yourdomain.com' => 'CakePHP SendGrid'])
-    ->setSender('someone@example.com', 'Someone')
     ->setTo('foo@example.com.com')
-    ->addTo('bar@example.com')
+    ->setSubject('Email from CakePHP SendGrid plugin')
     ->setAttachments([
         'cake_icon1.png' => Configure::read('App.imageBaseUrl') . 'cake.icon.png',
         'cake_icon2.png' => ['file' => Configure::read('App.imageBaseUrl') . 'cake.icon.png'],
         WWW_ROOT . 'favicon.ico'
     ])
-    ->setSubject('Email from CakePHP SendGrid plugin')
-    ->send('Message from CakePHP SendGrid plugin');
+    ->deliver('Message from CakePHP SendGrid plugin');
 ```
 
 > To send inline attachment, use `contentId` parameter while setting attachment.
@@ -130,20 +122,20 @@ You can use the template created in SendGrid backend. Get the template id by eit
 Set the template id using `setTemplate` method.
 
 ```php
-$email = new Email('sendgrid');
-$emailInstance = $email->getTransport();
-$emailInstance->setTemplte(123);
-$email->send();
+$email = new SendGridMailer();
+$email->setTo('foo@example.com.com')
+    ->setTemplate('d-xxxxxx')
+    ->deliver();
 ```
 
 ### Schedule
-You can schedule the email to be sent in future date. You can set upto 72 hours in future as per SendGrid documentation.
+You can schedule the email to be sent in future date. You can set upto 72 hours in future as per SendGrid documentation. You need to pass a unix timestamp value.
 
 ```php
-$email = new Email('sendgrid');
-$emailInstance = $email->getTransport();
-$emailInstance->setScheduleTime(1537958411);
-$email->send();
+$email = new SendGridMailer();
+$email->setTo('foo@example.com.com')
+    ->setSendAt(1649500630)
+    ->deliver();
 ```
 
 ## Reporting Issues
