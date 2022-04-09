@@ -137,6 +137,13 @@ class SendGridTransport extends AbstractTransport
         }
     }
 
+    /**
+     * Sets option for SendGrid API request
+     *
+     * @param string $key Name of option e.g. template_id, send_at, etc
+     * @param mixed $value Value of the option
+     * @return void
+     */
     public function setOption($key, $value)
     {
         $this->_reqParams[$key] = $value;
@@ -155,7 +162,7 @@ class SendGridTransport extends AbstractTransport
     /**
      * Prepares the from, to and sender email addresses
      *
-     * @param \Cake\Mailer\Message $message Email message.
+     * @param \Cake\Mailer\Message $message Email message
      * @return void
      * 
      * @throws Exception
@@ -201,7 +208,7 @@ class SendGridTransport extends AbstractTransport
     /**
      * Prepares the email headers
      *
-     * @param \Cake\Mailer\Message $message
+     * @param \Cake\Mailer\Message $message Email message
      * @return void
      */
     protected function _processHeaders(Message $message)
@@ -223,7 +230,7 @@ class SendGridTransport extends AbstractTransport
     /**
      * Prepares the attachments
      *
-     * @param \Cake\Mailer\Message $message
+     * @param \Cake\Mailer\Message $message Email message
      * @return void
      */
     protected function _processAttachments(Message $message)
