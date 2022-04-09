@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * SendGrid Plugin for CakePHP
@@ -19,7 +20,7 @@ namespace SendGrid\Mailer\Transport;
 use Cake\Core\Configure;
 use Cake\Http\Client;
 use Cake\Mailer\AbstractTransport;
-use \Cake\Mailer\Message;
+use Cake\Mailer\Message;
 use SendGrid\Mailer\Exception\SendGridApiException;
 
 /**
@@ -97,7 +98,6 @@ class SendGridTransport extends AbstractTransport
      *
      * @param \Cake\Mailer\Message $message Email message.
      * @return array An array with api response and email parameters
-     * 
      * @throws \SendGrid\Mailer\Exception\SendGridApiException If api key or from address is not set
      */
     public function send(Message $message): array
@@ -114,13 +114,13 @@ class SendGridTransport extends AbstractTransport
         if (!empty($message->getBodyHtml())) {
             $this->_reqParams['content'][] = (object)[
                 'type' => 'text/html',
-                'value' => trim($message->getBodyHtml())
+                'value' => trim($message->getBodyHtml()),
             ];
         }
-        if ('both' == $emailFormat || 'text' == $emailFormat) {
+        if ($emailFormat == 'both' || $emailFormat == 'text') {
             $this->_reqParams['content'][] = (object)[
                 'type' => 'text/plain',
-                'value' => trim($message->getBodyText())
+                'value' => trim($message->getBodyText()),
             ];
         }
 
@@ -157,8 +157,7 @@ class SendGridTransport extends AbstractTransport
      *
      * @param \Cake\Mailer\Message $message Email message.
      * @return void
-     * 
-     * @throws Exception
+     * @throws \SendGrid\Mailer\Transport\Exception
      */
     protected function _prepareEmailAddresses(Message $message)
     {
@@ -210,7 +209,7 @@ class SendGridTransport extends AbstractTransport
         if (!empty($customHeaders)) {
             $headers = [];
             foreach ($customHeaders as $header => $value) {
-                if (0 === strpos($header, $this->_customHeaderPrefix) && !empty($value)) {
+                if (strpos($header, $this->_customHeaderPrefix) === 0 && !empty($value)) {
                     $headers[substr($header, strlen($this->_customHeaderPrefix))] = $value;
                 }
             }
@@ -234,8 +233,8 @@ class SendGridTransport extends AbstractTransport
                 $this->_reqParams['attachments'][] = (object)[
                     'content' => base64_encode(file_get_contents($file['file'])),
                     'filename' => $name,
-                    'disposition' => (!empty($file['contentId'])) ? 'inline' : 'attachment',
-                    'content_id' => (!empty($file['contentId'])) ? $file['contentId'] : ''
+                    'disposition' => !empty($file['contentId']) ? 'inline' : 'attachment',
+                    'content_id' => !empty($file['contentId']) ? $file['contentId'] : '',
                 ];
             }
         }
@@ -252,8 +251,8 @@ class SendGridTransport extends AbstractTransport
             'type' => 'json',
             'headers' => [
                 'Content-Type' => 'application/json',
-                'Authorization' => 'Bearer ' . $this->getConfig('apiKey')
-            ]
+                'Authorization' => 'Bearer ' . $this->getConfig('apiKey'),
+            ],
         ];
 
         $response = $this->Client
@@ -262,7 +261,7 @@ class SendGridTransport extends AbstractTransport
         $result = [];
         $result['apiResponse'] = $response->getJson();
         $result['responseCode'] = $response->getStatusCode();
-        $result['staus'] = ($result['responseCode'] == 202) ? 'OK' : 'ERROR';
+        $result['staus'] = $result['responseCode'] == 202 ? 'OK' : 'ERROR';
         if (Configure::read('debug')) {
             $result['reqParams'] = $this->_reqParams;
         }
