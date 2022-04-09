@@ -12,16 +12,30 @@ declare(strict_types=1);
  * @copyright Copyright (c) SprintCube (https://www.sprintcube.com)
  * @license   https://opensource.org/licenses/mit-license.php MIT License
  * @link      https://github.com/sprintcube/cakephp-sendgrid
- * @since     1.0.0
+ * @since     4.0.0
  */
 
-namespace SendGrid;
+namespace SendGrid\Mailer;
 
-use Cake\Core\BasePlugin;
+use Cake\Mailer\Mailer;
 
 /**
- * Plugin for SendGrid
+ * Mailer base class for SendGrid
+ *
+ * This allows to send the email using the SendGrid.
  */
-class Plugin extends BasePlugin
+class SendGridMailer extends Mailer
 {
+    use SendGridTrait;
+
+    /**
+     * Constructor
+     *
+     * @param array<string, mixed>|string|null $config Array of configs, or string to load configs from app.php
+     */
+    public function __construct($config = [])
+    {
+        parent::__construct($config);
+        $this->setTransport('sendgrid');
+    }
 }
