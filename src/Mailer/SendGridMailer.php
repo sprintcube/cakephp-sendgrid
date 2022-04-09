@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 /**
@@ -22,7 +21,7 @@ use Cake\Mailer\Mailer;
 
 /**
  * Mailer base class for SendGrid
- * 
+ *
  * This allows to send the email using the SendGrid.
  */
 class SendGridMailer extends Mailer

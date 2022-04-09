@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 /**
@@ -20,10 +19,10 @@ namespace SendGrid\Mailer;
 
 /**
  * Trait SendGridTrait
- * 
+ *
  * Provides the additional functions to set different
  * options for SendGrid like template, send at scheduled time, etc.
- * 
+ *
  * TODO: Read more at https://docs.sendgrid.com/api-reference/mail-send/mail-send
  *  - Add support for categories [categories]
  *  - Add support for custom arguments [custom_args]
@@ -61,12 +60,12 @@ trait SendGridTrait
     }
 
     /**
-     * Sets the timestamp allowing you to specify 
+     * Sets the timestamp allowing you to specify
      * when you want your email to be delivered
      *
      * Timestamp can be up to 72 hours.
      *
-      * Example
+     * Example
      * ```
      *  $email = new SendGridMailer();
      *  $email->setTo('foo@example.com.com')
