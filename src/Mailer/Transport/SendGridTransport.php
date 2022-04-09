@@ -1,6 +1,7 @@
 <?php
+
 /**
- * SendGrid Plugin for CakePHP 3
+ * SendGrid Plugin for CakePHP
  * Copyright (c) SprintCube (https://www.sprintcube.com)
  *
  * Licensed under The MIT License
@@ -15,9 +16,10 @@
 
 namespace SendGrid\Mailer\Transport;
 
+use Cake\Core\Configure;
 use Cake\Http\Client;
 use Cake\Mailer\AbstractTransport;
-use Cake\Mailer\Email;
+use \Cake\Mailer\Message;
 use SendGrid\Mailer\Exception\SendGridApiException;
 
 /**
@@ -58,64 +60,86 @@ class SendGridTransport extends AbstractTransport
     protected $_customHeaderPrefix = 'X-';
 
     /**
+     * @var \Cake\Http\Client HTTP Client to use
+     */
+    public $Client;
+
+    /**
+     * Constructor
+     *
+     * @param array $config Configuration options.
+     */
+    public function __construct($config = [])
+    {
+        parent::__construct($config);
+
+        if (empty($this->getConfig('apiEndpoint'))) {
+            $this->setConfig('apiEndpoint', $this->_apiEndpoint);
+        }
+
+        $this->_reqParams = [];
+        $this->Client = new Client();
+    }
+
+    /**
      * Send mail
      *
-     * @param \Cake\Mailer\Email $email Cake Email
+     * Example
+     * ```
+     * $email->setFrom(['you@yourdomain.com' => 'CakePHP SendGrid'])
+     *  ->setTo('foo@example.com.com')
+     *  ->addTo('bar@example.com')
+     *  ->addCc('john@example.com')
+     *  ->setHeaders(['X-Custom' => 'headervalue'])
+     *  ->setSubject('Email from CakePHP SendGrid plugin')
+     *  ->deliver('Message from CakePHP SendGrid plugin');
+     * ```
+     *
+     * @param \Cake\Mailer\Message $message Email message.
      * @return array An array with api response and email parameters
+     * 
+     * @throws \SendGrid\Mailer\Exception\SendGridApiException If api key or from address is not set
      */
-    public function send(Email $email)
+    public function send(Message $message): array
     {
         if (empty($this->getConfig('apiKey'))) {
-            throw new SendGridApiException(['Api Key for SendGrid could not found.']);
+            throw new SendGridApiException('Api Key for SendGrid could not found.');
         }
 
-        $this->_prepareEmailAddresses($email);
-        $this->_reqParams['subject'] = $email->getSubject();
-        $emailFormat = $email->getEmailFormat();
-        if ('both' == $emailFormat || 'text' == $emailFormat) {
+        $this->_prepareEmailAddresses($message);
+
+        $this->_reqParams['subject'] = $message->getSubject();
+
+        $emailFormat = $message->getEmailFormat();
+        if (!empty($message->getBodyHtml())) {
             $this->_reqParams['content'][] = (object)[
-                    'type' => 'text/plain',
-                    'value' => trim($email->message(Email::MESSAGE_TEXT))
+                'type' => 'text/html',
+                'value' => trim($message->getBodyHtml())
             ];
         }
-        $this->_reqParams['content'][] = (object)[
-                'type' => 'text/html',
-                'value' => trim($email->message(Email::MESSAGE_HTML))
-        ];
-
-        $customHeaders = $email->getHeaders(['_headers']);
-        if (!empty($customHeaders)) {
-            $headers = [];
-            foreach ($customHeaders as $header => $value) {
-                if (0 === strpos($header, $this->_customHeaderPrefix) && !empty($value)) {
-                    $headers[substr($header, strlen($this->_customHeaderPrefix))] = $value;
-                }
-            }
-            if (!empty($headers)) {
-                $this->_reqParams['headers'] = (object)$headers;
-            }
+        if ('both' == $emailFormat || 'text' == $emailFormat) {
+            $this->_reqParams['content'][] = (object)[
+                'type' => 'text/plain',
+                'value' => trim($message->getBodyText())
+            ];
         }
 
-        $attachments = $email->getAttachments();
-        if (!empty($attachments)) {
-            foreach ($attachments as $name => $file) {
-                $this->_reqParams['attachments'][] = (object)[
-                        'content' => base64_encode(file_get_contents($file['file'])),
-                        'filename' => $name,
-                        'disposition' => (!empty($file['contentId'])) ? 'inline' : 'attachment',
-                        'content_id' => (!empty($file['contentId'])) ? $file['contentId'] : ''
-                ];
-            }
+        $this->_processHeaders($message);
+
+        $this->_processAttachments($message);
+
+        try {
+            return $this->_sendEmail();
+        } catch (SendGridApiException $e) {
+            throw $e;
+        } finally {
+            $this->_reset();
         }
+    }
 
-        $apiRsponse = $this->_sendEmail();
-        $res = [
-            'apiResponse' => $apiRsponse,
-            'reqParams' => $this->_reqParams
-        ];
-        $this->_reset();
-
-        return $res;
+    public function setOption($key, $value)
+    {
+        $this->_reqParams[$key] = $value;
     }
 
     /**
@@ -129,67 +153,20 @@ class SendGridTransport extends AbstractTransport
     }
 
     /**
-     * Sets template id
-     *
-     * This will set template to use in email. Template can be created
-     * in SendGrid dashboard.
-     *
-     * Example
-     * ```
-     *  $email = new Email('sendgrid');
-     *  $emailInstance = $email->getTransport();
-     *  $emailInstance->setTemplte(123);
-     *
-     *  $email->send();
-     * ```
-     *
-     * @param string $id ID of template
-     * @return $this
-     */
-    public function setTemplate($id = null)
-    {
-        if (!empty($id)) {
-            $this->_reqParams['template_id'] = $id;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Sets the timestamp in the future this email should be sent
-     *
-     * Timestamp can be up to 72 hours.
-     *
-     * Example
-     * ```
-     *  $email = new Email('sendgrid');
-     *  $emailInstance = $email->getTransport();
-     *  $emailInstance->setScheduleTime(1537958411);
-     *
-     *  $email->send();
-     * ```
-     *
-     * @param array $timestamp Unix timestamp
-     * @return $this
-     */
-    public function setScheduleTime($timestamp = null)
-    {
-        if (is_numeric($timestamp)) {
-            $this->_reqParams['send_at'] = $timestamp;
-        }
-
-        return $this;
-    }
-
-    /**
      * Prepares the from, to and sender email addresses
      *
-     * @param \Cake\Mailer\Email $email Cake Email instance
+     * @param \Cake\Mailer\Message $message Email message.
      * @return void
+     * 
+     * @throws Exception
      */
-    protected function _prepareEmailAddresses(Email $email)
+    protected function _prepareEmailAddresses(Message $message)
     {
-        $from = $email->getFrom();
+        $from = $message->getFrom();
+        if (empty($from)) {
+            throw new SendGridApiException('Missing from email address.');
+        }
+
         if (key($from) != $from[key($from)]) {
             $this->_reqParams['from'] = (object)['email' => key($from), 'name' => $from[key($from)]];
         } else {
@@ -197,24 +174,21 @@ class SendGridTransport extends AbstractTransport
         }
 
         $emails = [];
-        $to = $email->getTo();
-        foreach ($to as $toEmail => $toName) {
+        foreach ($message->getTo() as $toEmail => $toName) {
             $emails['to'][] = [
                 'email' => $toEmail,
                 'name' => $toName
             ];
         }
 
-        $cc = $email->getCc();
-        foreach ($cc as $ccEmail => $ccName) {
+        foreach ($message->getCc() as $ccEmail => $ccName) {
             $emails['cc'][] = [
                 'email' => $ccEmail,
                 'name' => $ccName
             ];
         }
 
-        $bcc = $email->getBcc();
-        foreach ($bcc as $bccEmail => $bccName) {
+        foreach ($message->getBcc() as $bccEmail => $bccName) {
             $emails['bcc'][] = [
                 'email' => $bccEmail,
                 'name' => $bccName
@@ -225,18 +199,75 @@ class SendGridTransport extends AbstractTransport
     }
 
     /**
+     * Prepares the email headers
+     *
+     * @param \Cake\Mailer\Message $message
+     * @return void
+     */
+    protected function _processHeaders(Message $message)
+    {
+        $customHeaders = $message->getHeaders(['_headers']);
+        if (!empty($customHeaders)) {
+            $headers = [];
+            foreach ($customHeaders as $header => $value) {
+                if (0 === strpos($header, $this->_customHeaderPrefix) && !empty($value)) {
+                    $headers[substr($header, strlen($this->_customHeaderPrefix))] = $value;
+                }
+            }
+            if (!empty($headers)) {
+                $this->_reqParams['headers'] = (object)$headers;
+            }
+        }
+    }
+
+    /**
+     * Prepares the attachments
+     *
+     * @param \Cake\Mailer\Message $message
+     * @return void
+     */
+    protected function _processAttachments(Message $message)
+    {
+        $attachments = $message->getAttachments();
+        if (!empty($attachments)) {
+            foreach ($attachments as $name => $file) {
+                $this->_reqParams['attachments'][] = (object)[
+                    'content' => base64_encode(file_get_contents($file['file'])),
+                    'filename' => $name,
+                    'disposition' => (!empty($file['contentId'])) ? 'inline' : 'attachment',
+                    'content_id' => (!empty($file['contentId'])) ? $file['contentId'] : ''
+                ];
+            }
+        }
+    }
+
+    /**
      * Make an API request to send email
      *
      * @return mixed JSON Response from SendGrid API
      */
     protected function _sendEmail()
     {
-        $headers = ['type' => 'json'];
-        $http = new Client(['headers' => ['Authorization' => 'Bearer ' . $this->getConfig('apiKey')]]);
-        $response = $http
-            ->post("{$this->getConfig('apiEndpoint')}/mail/send", json_encode($this->_reqParams), $headers);
+        $options = [
+            'type' => 'json',
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Bearer ' . $this->getConfig('apiKey')
+            ]
+        ];
 
-        return $response->json;
+        $response = $this->Client
+            ->post("{$this->getConfig('apiEndpoint')}/mail/send", json_encode($this->_reqParams), $options);
+
+        $result = [];
+        $result['apiResponse'] = $response->getJson();
+        $result['responseCode'] = $response->getStatusCode();
+        $result['staus'] = ($result['responseCode'] == 202) ? 'OK' : 'ERROR';
+        if (Configure::read('debug')) {
+            $result['reqParams'] = $this->_reqParams;
+        }
+
+        return $result;
     }
 
     /**

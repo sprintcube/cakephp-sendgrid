@@ -1,6 +1,6 @@
 <?php
 /**
- * SendGrid Plugin for CakePHP 3
+ * SendGrid Plugin for CakePHP
  * Copyright (c) SprintCube (https://www.sprintcube.com)
  *
  * Licensed under The MIT License

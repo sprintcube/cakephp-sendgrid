@@ -1,4 +1,4 @@
-# SendGrid Plugin for CakePHP 3
+# SendGrid Plugin for CakePHP
 
 [![Build Status](https://travis-ci.org/sprintcube/cakephp-sendgrid.svg?branch=master)](https://travis-ci.org/sprintcube/cakephp-sendgrid)
 [![codecov](https://codecov.io/gh/sprintcube/cakephp-sendgrid/branch/master/graph/badge.svg)](https://codecov.io/gh/sprintcube/cakephp-sendgrid)
@@ -8,12 +8,14 @@
 
 This plugin provides email delivery using [SendGrid](https://sendgrid.com/).
 
+This branch is for use with CakePHP 4.0+. For CakePHP 3, please use cake-3.x branch.
+
 ## Requirements
 
 This plugin has the following requirements:
 
-* CakePHP 3.4.0 or greater.
-* PHP 5.6 or greater.
+* CakePHP 4.0 or greater.
+* PHP 7.2 or greater.
 
 ## Installation
 
