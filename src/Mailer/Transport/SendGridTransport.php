@@ -268,7 +268,7 @@ class SendGridTransport extends AbstractTransport
         $result = [];
         $result['apiResponse'] = $response->getJson();
         $result['responseCode'] = $response->getStatusCode();
-        $result['staus'] = $result['responseCode'] == 202 ? 'OK' : 'ERROR';
+        $result['status'] = $result['responseCode'] == 202 ? 'OK' : 'ERROR';
         if (Configure::read('debug')) {
             $result['reqParams'] = $this->_reqParams;
         }
