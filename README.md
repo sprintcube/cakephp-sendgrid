@@ -1,6 +1,5 @@
 # SendGrid Plugin for CakePHP
 
-[![Build Status](https://travis-ci.org/sprintcube/cakephp-sendgrid.svg?branch=master)](https://travis-ci.org/sprintcube/cakephp-sendgrid)
 [![codecov](https://codecov.io/gh/sprintcube/cakephp-sendgrid/branch/master/graph/badge.svg)](https://codecov.io/gh/sprintcube/cakephp-sendgrid)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
 [![Latest Stable Version](https://poser.pugx.org/sprintcube/cakephp-sendgrid/v/stable)](https://packagist.org/packages/sprintcube/cakephp-sendgrid)
