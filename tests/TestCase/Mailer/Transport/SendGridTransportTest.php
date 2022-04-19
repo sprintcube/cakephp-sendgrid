@@ -17,12 +17,10 @@ declare(strict_types=1);
 
 namespace SendGrid\Test\TestCase\Mailer\Transport;
 
-use Cake\Mailer\Email;
 use Cake\TestSuite\TestCase;
 
 class SendGridTransportTest extends TestCase
 {
-
     public function setUp(): void
     {
         parent::setUp();
