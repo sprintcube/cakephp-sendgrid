@@ -91,5 +91,5 @@ jobs:
     - name: Run phpcs
       run: composer cs-check
 
-    - name: Run psalm
-      run: psalm --output-format=github
+    # - name: Run psalm
+    #   run: psalm --output-format=github
