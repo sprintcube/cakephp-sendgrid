@@ -26,9 +26,8 @@ use Cake\Core\Exception\Exception;
  */
 class SendGridApiException extends Exception
 {
-
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     protected $_messageTemplate = '%s';
 }

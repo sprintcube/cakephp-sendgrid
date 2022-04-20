@@ -28,7 +28,6 @@ use SendGrid\Mailer\Exception\SendGridApiException;
  */
 class SendGridTransport extends AbstractTransport
 {
-
     /**
      * Default config for this class
      *
@@ -36,7 +35,7 @@ class SendGridTransport extends AbstractTransport
      */
     protected $_defaultConfig = [
         'apiEndpoint' => 'https://api.sendgrid.com/v3',
-        'apiKey' => ''
+        'apiKey' => '',
     ];
 
     /**
@@ -183,21 +182,21 @@ class SendGridTransport extends AbstractTransport
         foreach ($message->getTo() as $toEmail => $toName) {
             $emails['to'][] = [
                 'email' => $toEmail,
-                'name' => $toName
+                'name' => $toName,
             ];
         }
 
         foreach ($message->getCc() as $ccEmail => $ccName) {
             $emails['cc'][] = [
                 'email' => $ccEmail,
-                'name' => $ccName
+                'name' => $ccName,
             ];
         }
 
         foreach ($message->getBcc() as $bccEmail => $bccName) {
             $emails['bcc'][] = [
                 'email' => $bccEmail,
-                'name' => $bccName
+                'name' => $bccName,
             ];
         }
 
