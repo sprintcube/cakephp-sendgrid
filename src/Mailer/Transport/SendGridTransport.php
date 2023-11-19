@@ -33,7 +33,7 @@ class SendGridTransport extends AbstractTransport
      *
      * @var array
      */
-    protected $_defaultConfig = [
+    protected array $_defaultConfig = [
         'apiEndpoint' => 'https://api.sendgrid.com/v3',
         'apiKey' => '',
     ];

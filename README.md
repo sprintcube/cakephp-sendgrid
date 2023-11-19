@@ -137,6 +137,16 @@ $email->setTo('foo@example.com.com')
     ->setSendAt(1649500630)
     ->deliver();
 ```
+### Webhooks
+You can receive status events from SendGrid.
+
+
+  https://app.sendgrid.com/settings/mail_settings/webhook_settings
+  https://docs.sendgrid.com/for-developers/tracking-events/event#security-features
+  
+/send-grid/webhook
+
+
 
 ## Reporting Issues
 
