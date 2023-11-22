@@ -36,6 +36,14 @@ class SendGridTransport extends AbstractTransport
     protected array $_defaultConfig = [
         'apiEndpoint' => 'https://api.sendgrid.com/v3',
         'apiKey' => '',
+        'enableWebhooks' => false, // If you want to use webhooks to monitor delivery ane error reports
+        'webhookConfig' => [
+            'domain' => 'example.com', // The domain used for Message IDs does not need to be 
+            'tableName' => 'email_queue', // The table name that stores email data
+            'uniqueIdField' => 'id', // The field name that stores the unique message ID char(36) uid
+            'statusField' => 'status', // The field name that stores the status of the email char(50) status
+            'statusMessageField' => 'status_message', // The field name that stores the status message TEXT status_message
+        ]   
     ];
 
     /**
@@ -108,6 +116,8 @@ class SendGridTransport extends AbstractTransport
         $this->_prepareEmailAddresses($message);
 
         $this->_reqParams['subject'] = $message->getSubject();
+
+       // $this->_reqParams['custom_args'] ="{'email_msg_id': '106'}";
 
         $emailFormat = $message->getEmailFormat();
         if (!empty($message->getBodyHtml())) {
@@ -253,6 +263,7 @@ class SendGridTransport extends AbstractTransport
      */
     protected function _sendEmail()
     {
+
         $options = [
             'type' => 'json',
             'headers' => [
@@ -260,6 +271,7 @@ class SendGridTransport extends AbstractTransport
                 'Authorization' => 'Bearer ' . $this->getConfig('apiKey'),
             ],
         ];
+       
 
         $response = $this->Client
             ->post("{$this->getConfig('apiEndpoint')}/mail/send", json_encode($this->_reqParams), $options);
@@ -267,6 +279,7 @@ class SendGridTransport extends AbstractTransport
         $result = [];
         $result['apiResponse'] = $response->getJson();
         $result['responseCode'] = $response->getStatusCode();
+        $result['messageId'] = $response->getHeader('X-Message-Id') ?? '';
         $result['status'] = $result['responseCode'] == 202 ? 'OK' : 'ERROR';
         if (Configure::read('debug')) {
             $result['reqParams'] = $this->_reqParams;
