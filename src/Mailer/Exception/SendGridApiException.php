@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+use Cake\Core\Exception\Exception;
 /**
  * SendGrid Plugin for CakePHP
  * Copyright (c) SprintCube (https://www.sprintcube.com)
@@ -17,7 +18,7 @@ declare(strict_types=1);
 
 namespace SendGrid\Mailer\Exception;
 
-use Cake\Core\Exception\Exception;
+use Exception;
 
 /**
  * SendGrid Api exception

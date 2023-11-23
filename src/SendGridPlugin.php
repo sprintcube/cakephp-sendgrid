@@ -9,6 +9,8 @@ use Cake\Core\ContainerInterface;
 use Cake\Core\PluginApplicationInterface;
 use Cake\Http\MiddlewareQueue;
 use Cake\Routing\RouteBuilder;
+use Cake\Http\Middleware\CsrfProtectionMiddleware;
+
 
 /**
  * Plugin for SendGrid
@@ -51,6 +53,9 @@ class SendGridPlugin extends BasePlugin
         parent::routes($routes);
     }
 
+
+
+
     /**
      * Add middleware for the plugin.
      *
@@ -60,7 +65,6 @@ class SendGridPlugin extends BasePlugin
     public function middleware(MiddlewareQueue $middlewareQueue): MiddlewareQueue
     {
         // Add your middlewares here
-
         return $middlewareQueue;
     }
 
