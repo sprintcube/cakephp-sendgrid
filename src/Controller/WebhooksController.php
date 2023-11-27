@@ -57,10 +57,10 @@ class WebHooksController extends AppController
                 $config['statusMessageField'],
             ])->where([$config['uniqueIdField'] => $message_id])->first();
             if ($email_record) {
-                $email_record->set($config['statusMessageField'],$email_record->get($config['statusMessageField']). "<br>" . (new DateTime())->format('d/m/Y H:i:s') . ": " . $event['event'] . " " . 
+                $email_record->set($config['statusMessageField'],$email_record->get($config['statusMessageField']). (new DateTime())->format('d/m/Y H:i:s') . ": " . $event['event'] . " " . 
                 (isset($event['response'])? $event['response']:""). " " . 
                 (isset($event['reason'])? $event['reason']:""));
-                $email_record->set($config['statusField'],$event['event']);
+                $email_record->set($config['statusField'],$event['event']."<br>");
                 $emailTable->save($email_record);
             }
         }
