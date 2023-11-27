@@ -16,10 +16,12 @@ declare(strict_types=1);
 namespace SendGrid\Controller;
 
 use SendGrid\Controller\AppController;
-use Cake\Log\Engine\FileLog;
+
 use Cake\View\JsonView;
 use Cake\Core\Configure;
 use Cake\I18n\DateTime;
+
+use Cake\Log\Log;
 
 class WebHooksController extends AppController
 
@@ -34,25 +36,34 @@ class WebHooksController extends AppController
     public function index()
     {
 
-       $this->viewBuilder()->setClassName("Json");
+        $this->viewBuilder()->setClassName("Json");
 
-       $result = $this->request->getData();
-       $this->set('result',$result);
+        $result = $this->request->getData();
+        $this->set('result', $result);
 
-       $config = Configure::read('sendgridWebhook');
+        $config = Configure::read('sendgridWebhook');
 
-     $emailTable = $this->getTableLocator()->get($config['tableClass']);        
+        if (isset($config['debug']) && $config['debug'] == 'true') {
+            Log::debug(json_encode($result));
+        }
 
-        $email_record = $emailTable->find('all')->contain([
-            $config['uniqueIdField'],
-            $config['statusField'],
-            $config['statusMessageField'],
-        ])->where([$config['uniqueIdField']=>$result->sg_message_id])->first();
+        $emailTable = $this->getTableLocator()->get($config['tableClass']);
 
-        $email_record->$config['statusMessageField'] .= "<br>".(new DateTime())->format('d/m/Y H:i:s').":".$result->event." ".$result->response??" ".$result->reason??" ";
-        $email_record->$config['statusField'] = $result->event;
-        $emailTable->save($email_record);
-
+        foreach ($result as $event) {
+            $message_id = explode(".", $event['sg_message_id'])[0];
+            $email_record = $emailTable->find('all')->select(["id",
+                $config['uniqueIdField'],
+                $config['statusField'],
+                $config['statusMessageField'],
+            ])->where([$config['uniqueIdField'] => $message_id])->first();
+            if ($email_record) {
+                $email_record->set($config['statusMessageField'],$email_record->get($config['statusMessageField']). "<br>" . (new DateTime())->format('d/m/Y H:i:s') . ": " . $event['event'] . " " . 
+                (isset($event['response'])? $event['response']:""). " " . 
+                (isset($event['reason'])? $event['reason']:""));
+                $email_record->set($config['statusField'],$event['event']);
+                $emailTable->save($email_record);
+            }
+        }
         $ok = "OK";
         $this->viewBuilder()->setOption('serialize', $ok);
     }
