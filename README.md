@@ -176,24 +176,23 @@ The CSRF protection middleware needs to allow posts to the webhooks controller i
 Remove the current CSRF protection middleware and replace it with the following. If you already have CSRF exceptions then add the Webhooks one
   
   ```php
-       $csrf = new CsrfProtectionMiddleware();
+    $csrf = new CsrfProtectionMiddleware();
 
-     $csrf->skipCheckCallback(function ($request) {
+    $csrf->skipCheckCallback(function ($request) {
            // Skip token check for API URLs.
           if ($request->getParam('controller') === 'Webhooks') {
              return true;
             }
-     });
+    });
  
       // Ensure routing middleware is added to the queue before CSRF protection middleware.
-     $middlewareQueue->add($csrf);
+    $middlewareQueue->add($csrf);
  
     return $middlewareQueue;
   
   ```
 
-TODO enable SendGrid security 
-  https://docs.sendgrid.com/for-developers/tracking-events/event#security-features
+
   
 
 

@@ -10,7 +10,11 @@ declare(strict_types=1);
 /**
  * test 
  * 
- curl -X POST http://localhost:8765/send-grid/webhooks -H 'Content-Type: application/json' -d '[{"timestamp": 1700762652,  "event": "processed", "sg_message_id": "14c5d75ce93.dfd.64b469.filter0001.16648.5515E0B88.0"}]'
+ * curl -X POST http://localhost:8765/send-grid/webhooks -H 'Content-Type: application/json' -d '[{"timestamp": 1700762652,  "event": "processed", "sg_message_id": "14c5d75ce93.dfd.64b469.filter0001.16648.5515E0B88.0"}]'
+ *
+ * TODO enable SendGrid security 
+ * https://docs.sendgrid.com/for-developers/tracking-events/event#security-features
+
  */
 
 namespace SendGrid\Controller;
