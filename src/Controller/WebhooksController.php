@@ -10,7 +10,7 @@ declare(strict_types=1);
 /**
  * test 
  * 
- curl -X POST http://localhost:8765/send-grid/webhooks -H 'Content-Type: application/json' -d '{"timestamp": 1700762652,  "event": "processed", "sg_message_id": "14c5d75ce93.dfd.64b469.filter0001.16648.5515E0B88.0"}'
+ curl -X POST http://localhost:8765/send-grid/webhooks -H 'Content-Type: application/json' -d '[{"timestamp": 1700762652,  "event": "processed", "sg_message_id": "14c5d75ce93.dfd.64b469.filter0001.16648.5515E0B88.0"}]'
  */
 
 namespace SendGrid\Controller;
@@ -48,7 +48,7 @@ class WebHooksController extends AppController
         }
 
         $emailTable = $this->getTableLocator()->get($config['tableClass']);
-
+        $count = 0;
         foreach ($result as $event) {
             $message_id = explode(".", $event['sg_message_id'])[0];
             $email_record = $emailTable->find('all')->select(["id",
@@ -57,14 +57,18 @@ class WebHooksController extends AppController
                 $config['statusMessageField'],
             ])->where([$config['uniqueIdField'] => $message_id])->first();
             if ($email_record) {
+                $count++;
                 $email_record->set($config['statusMessageField'],$email_record->get($config['statusMessageField']). (new DateTime())->format('d/m/Y H:i:s') . ": " . $event['event'] . " " . 
                 (isset($event['response'])? $event['response']:""). " " . 
-                (isset($event['reason'])? $event['reason']:""));
-                $email_record->set($config['statusField'],$event['event']."<br>");
+                (isset($event['reason'])? $event['reason']:"<br>"));
+                $email_record->set($config['statusField'],$event['event']);
                 $emailTable->save($email_record);
             }
         }
-        $ok = "OK";
-        $this->viewBuilder()->setOption('serialize', $ok);
+        if (isset($config['debug']) && $config['debug'] == 'true') {
+            Log::debug("Updated $count Email records");
+        }
+        $this->set('OK', "OK");
+        $this->viewBuilder()->setOption('serialize', "OK");
     }
 }
