@@ -189,6 +189,16 @@ class SendGridTransport extends AbstractTransport
             $this->_reqParams['from'] = (object)['email' => key($from)];
         }
 
+        $replyTo = $message->getReplyTo();
+        if (!empty($replyTo)) {
+            if (key($replyTo) != $replyTo[key($replyTo)]) {
+                $this->_reqParams['reply_to'] = (object)['email' => key($replyTo), 'name' => $replyTo[key($replyTo)]];
+                
+            } else {
+                $this->_reqParams['reply_to'] = (object)['email' => key($replyTo)];
+            }        
+        }
+
         $emails = [];
         foreach ($message->getTo() as $toEmail => $toName) {
             $emails['to'][] = [
@@ -273,9 +283,7 @@ class SendGridTransport extends AbstractTransport
             ],
         ];
 
-
-        $response = $this->Client
-            ->post("{$this->getConfig('apiEndpoint')}/mail/send", json_encode($this->_reqParams), $options);
+        $response = $this->Client->post("{$this->getConfig('apiEndpoint')}/mail/send", json_encode($this->_reqParams), $options);
 
         $result = [];
         $result['apiResponse'] = $response->getJson();
