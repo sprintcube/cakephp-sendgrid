@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -43,7 +44,7 @@ class SendGridTransport extends AbstractTransport
             'uniqueIdField' => 'id', // The field name that stores the unique message ID char(36) uid
             'statusField' => 'status', // The field name that stores the status of the email char(50) status
             'statusMessageField' => 'status_message', // The field name that stores the status message TEXT status_message
-        ]   
+        ]
     ];
 
     /**
@@ -117,19 +118,19 @@ class SendGridTransport extends AbstractTransport
 
         $this->_reqParams['subject'] = $message->getSubject();
 
-       // $this->_reqParams['custom_args'] ="{'email_msg_id': '106'}";
-
         $emailFormat = $message->getEmailFormat();
-        if (!empty($message->getBodyHtml())) {
-            $this->_reqParams['content'][] = (object)[
-                'type' => 'text/html',
-                'value' => trim($message->getBodyHtml()),
-            ];
-        }
+
         if ($emailFormat == 'both' || $emailFormat == 'text') {
             $this->_reqParams['content'][] = (object)[
                 'type' => 'text/plain',
                 'value' => trim($message->getBodyText()),
+            ];
+        }
+
+        if (!empty($message->getBodyHtml())) {
+            $this->_reqParams['content'][] = (object)[
+                'type' => 'text/html',
+                'value' => trim($message->getBodyHtml()),
             ];
         }
 
@@ -271,7 +272,7 @@ class SendGridTransport extends AbstractTransport
                 'Authorization' => 'Bearer ' . $this->getConfig('apiKey'),
             ],
         ];
-       
+
 
         $response = $this->Client
             ->post("{$this->getConfig('apiEndpoint')}/mail/send", json_encode($this->_reqParams), $options);
