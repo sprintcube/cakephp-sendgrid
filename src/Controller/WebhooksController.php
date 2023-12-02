@@ -14,11 +14,10 @@ declare(strict_types=1);
  * curl -X POST http://localhost:8765/send-grid/webhooks -H 'Content-Type: application/json' -d '[{"timestamp": 1700762652,  "event": "processed", "sg_message_id": "14c5d75ce93.dfd.64b469.filter0001.16648.5515E0B88.0"}]'
  *
  * security test 
- * curl -X POST http://localhost:8765/send-grid/webhooks -H 'Content-Type: application/json' -H 'X-Twilio-Email-Event-Webhook-Signature: MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEyV0a3iQnESb1wrXjheHcWTkNwdzrMc9LkCVKXadf3fjbWOfGZP8PRK17fg1SQHb6LAmpBkNRqkVqLl9Swpk2mg==' -d '[{"timestamp": 1700762652,  "event": "processed", "sg_message_id": "14c5d75ce93.dfd.64b469.filter0001.16648.5515E0B88.0"}]'
+ * curl -X POST http://localhost:8765/send-grid/webhooks -H 'Content-Type: application/json' -H 'X-Twilio-Email-Event-Webhook-Signature: MFk..........2mg==' -d '[{"timestamp": 1700762652,  "event": "processed", "sg_message_id": "14c5d75ce93.dfd.64b469.filter0001.16648.5515E0B88.0"}]'
  * 
  * 
  */
-//curl -X POST http://localhost:8765/send-grid/webhooks -H 'Content-Type: application/json' -H 'X-Twilio-Email-Event-Webhook-Timestamp: 1701474264'-H 'X-Twilio-Email-Event-Webhook-Signature: MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEyV0a3iQnESb1wrXjheHcWTkNwdzrMc9LkCVKXadf3fjbWOfGZP8PRK17fg1SQHb6LAmpBkNRqkVqLl9Swpk2mg==' -d '[{"email":"justin.g.harrison@gmail.com","event":"delivered","ip":"159.183.224.105","response":"250 2.0.0 OK  1701474014 bs32-20020a05620a472000b0077d85c98bb3si4555619qkb.194 - gsmtp","sg_event_id":"ZGVsaXZlcmVkLTAtMzkzNjk0MTYtZkdtQlRKdjNTbFM4TEhITU9ETTlvdy0w","sg_message_id":"fGmBTJv3SlS8LHHMODM9ow.filterdrecv-6bb8954444-svvb8-1-656A6EDB-1D.0","smtp-id":"<fGmBTJv3SlS8LHHMODM9ow@geopod-ismtpd-1>","timestamp":1701474014,"tls":1},{"email":"justin.g.harrison@gmail.com","event":"processed","send_at":0,"sg_event_id":"cHJvY2Vzc2VkLTM5MzY5NDE2LWZHbUJUSnYzU2xTOExISE1PRE05b3ctMA","sg_message_id":"fGmBTJv3SlS8LHHMODM9ow.filterdrecv-6bb8954444-svvb8-1-656A6EDB-1D.0","smtp-id":"<fGmBTJv3SlS8LHHMODM9ow@geopod-ismtpd-1>","timestamp":1701474011}]'
 
 
 namespace SendGrid\Controller;
@@ -32,7 +31,6 @@ use Cake\Event\EventInterface;
 use Cake\Log\Log;
 use SendGrid\Util\EllipticCurve\Ecdsa;
 use SendGrid\Util\EllipticCurve\PublicKey;
-use SendGrid\Util\EllipticCurve\PrivateKey;
 use SendGrid\Util\EllipticCurve\Signature;
 
 class WebHooksController extends AppController

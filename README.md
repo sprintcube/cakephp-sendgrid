@@ -197,7 +197,7 @@ Remove the current CSRF protection middleware and replace it with the following.
 If the authentication plugin (https://book.cakephp.org/authentication/3/en/index.html) is used for authentication the webhook action should work OK. If you have a different authentication method then you will need to add an exception for the webhook action. /send-grid/webhooks/index 
 
 #### Webhook Signature Verification
-SendGrid allows you to sign the webhook requests. This is a good idea in production. You will need to enable this in your SendGrid account and then set secure to true and add your verification key to your app_local.php config file.
+SendGrid allows you to sign the webhook requests. This is a good idea in production to keep the webhook secure. You will need to enable this in your SendGrid account and then set secure to true and add your verification key to your app_local.php config file.
 
 https://docs.sendgrid.com/for-developers/tracking-events/getting-started-event-webhook-security-features. Enable signed event webhook and follow the instructions to get the verification key.
 
