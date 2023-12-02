@@ -159,6 +159,9 @@ You need to map this table and these fields in you app_local.php config
         'uniqueIdField' => 'status_id', // The field name that stores the unique message ID VARCHAR(100)
         'statusField' => 'status', // The field name that stores the status of the email status VARCHAR(100)
         'statusMessageField' => 'status_message', // The field name that stores the status messages TEXT
+        'debug' => 'true', // write incoming requests to debug log
+        'secure' => 'true', // enable SendGrid signed webhook security. You should enable this in production
+        'verification_key' => '<YOUR VERIFICATION KEY>', // The verification key from SendGrid
     ],
 
 ```
@@ -170,7 +173,6 @@ You will need to login to your SendGrid Account and configure your domain and th
 The return url needs to be set to 
 * https://YOUR DOMAIN/send-grid/webhook
 
-Security needs to allow this action to be posted to TODO test with Auth plugin
 
 The CSRF protection middleware needs to allow posts to the webhooks controller in Application.php
 Remove the current CSRF protection middleware and replace it with the following. If you already have CSRF exceptions then add the Webhooks one
@@ -192,9 +194,12 @@ Remove the current CSRF protection middleware and replace it with the following.
   
   ```
 
+If the authentication plugin (https://book.cakephp.org/authentication/3/en/index.html) is used for authentication the webhook action should work OK. If you have a different authentication method then you will need to add an exception for the webhook action. /send-grid/webhooks/index 
 
-  
+#### Webhook Signature Verification
+SendGrid allows you to sign the webhook requests. This is a good idea in production. You will need to enable this in your SendGrid account and then set secure to true and add your verification key to your app_local.php config file.
 
+https://docs.sendgrid.com/for-developers/tracking-events/getting-started-event-webhook-security-features. Enable signed event webhook and follow the instructions to get the verification key.
 
 ## Reporting Issues
 
