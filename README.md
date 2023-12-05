@@ -8,14 +8,14 @@
 
 This plugin provides email delivery using [SendGrid](https://sendgrid.com/).
 
-This branch is for use with CakePHP 4.0+. For CakePHP 3, please use cake-3.x branch.
+This branch is for use with CakePHP 5.0+. For CakePHP 4, please use cake-4.x branch.
 
 ## Requirements
 
 This plugin has the following requirements:
 
-* CakePHP 4.0 or greater.
-* PHP 7.2 or greater.
+* CakePHP 5.0 or greater.
+* PHP 8.1 or greater.
 
 ## Installation
 
@@ -137,6 +137,69 @@ $email->setTo('foo@example.com.com')
     ->setSendAt(1649500630)
     ->deliver();
 ```
+## Webhooks
+You can receive status events from SendGrid. This allows you ensure that SendGrid was able to send the email recording bounces etc. 
+
+### Webhook Config
+You will require a Table in the database to record the emails sent. You can use the lorenzo/cakephp-email-queue plugin to queue the emails and in that case you would 
+use the email_queue table. However you can create your own table/Model as long as it has at least three columns. They can be called anything but they must have the correct types.
+
+When you send the email the deliver function will return an array with a 'messageId' element if it successfully connected to SendGrid. This needs to be recorded in the status_id field.
+
+* status_id VARCHAR(100)
+* status VARCHAR(100)
+* status_message TEXT
+
+You need to map this table and these fields in you app_local.php config
+
+```php
+
+    'sendgridWebhook' => [
+        'tableClass' => 'EmailQueue', // The table name that stores email data
+        'uniqueIdField' => 'status_id', // The field name that stores the unique message ID VARCHAR(100)
+        'statusField' => 'status', // The field name that stores the status of the email status VARCHAR(100)
+        'statusMessageField' => 'status_message', // The field name that stores the status messages TEXT
+        'debug' => 'true', // write incoming requests to debug log
+        'secure' => 'true', // enable SendGrid signed webhook security. You should enable this in production
+        'verification_key' => '<YOUR VERIFICATION KEY>', // The verification key from SendGrid
+    ],
+
+```
+
+You will need to login to your SendGrid Account and configure your domain and the events that you want to track
+
+ https://app.sendgrid.com/settings/mail_settings/webhook_settings
+
+The return url needs to be set to 
+* https://YOUR DOMAIN/send-grid/webhook
+
+
+The CSRF protection middleware needs to allow posts to the webhooks controller in Application.php
+Remove the current CSRF protection middleware and replace it with the following. If you already have CSRF exceptions then add the Webhooks one
+  
+  ```php
+    $csrf = new CsrfProtectionMiddleware();
+
+    $csrf->skipCheckCallback(function ($request) {
+           // Skip token check for API URLs.
+          if ($request->getParam('controller') === 'Webhooks') {
+             return true;
+            }
+    });
+ 
+      // Ensure routing middleware is added to the queue before CSRF protection middleware.
+    $middlewareQueue->add($csrf);
+ 
+    return $middlewareQueue;
+  
+  ```
+
+If the authentication plugin (https://book.cakephp.org/authentication/3/en/index.html) is used for authentication the webhook action should work OK. If you have a different authentication method then you will need to add an exception for the webhook action. /send-grid/webhooks/index 
+
+#### Webhook Signature Verification
+SendGrid allows you to sign the webhook requests. This is a good idea in production to keep the webhook secure. You will need to enable this in your SendGrid account and then set secure to true and add your verification key to your app_local.php config file.
+
+https://docs.sendgrid.com/for-developers/tracking-events/getting-started-event-webhook-security-features. Enable signed event webhook and follow the instructions to get the verification key.
 
 ## Reporting Issues
 

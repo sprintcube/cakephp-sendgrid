@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -33,9 +34,17 @@ class SendGridTransport extends AbstractTransport
      *
      * @var array
      */
-    protected $_defaultConfig = [
+    protected array $_defaultConfig = [
         'apiEndpoint' => 'https://api.sendgrid.com/v3',
         'apiKey' => '',
+        'enableWebhooks' => false, // If you want to use webhooks to monitor delivery ane error reports
+        'webhookConfig' => [
+            'domain' => 'example.com', // The domain used for Message IDs does not need to be 
+            'tableName' => 'email_queue', // The table name that stores email data
+            'uniqueIdField' => 'id', // The field name that stores the unique message ID char(36) uid
+            'statusField' => 'status', // The field name that stores the status of the email char(50) status
+            'statusMessageField' => 'status_message', // The field name that stores the status message TEXT status_message
+        ]
     ];
 
     /**
@@ -110,16 +119,18 @@ class SendGridTransport extends AbstractTransport
         $this->_reqParams['subject'] = $message->getSubject();
 
         $emailFormat = $message->getEmailFormat();
-        if (!empty($message->getBodyHtml())) {
-            $this->_reqParams['content'][] = (object)[
-                'type' => 'text/html',
-                'value' => trim($message->getBodyHtml()),
-            ];
-        }
+
         if ($emailFormat == 'both' || $emailFormat == 'text') {
             $this->_reqParams['content'][] = (object)[
                 'type' => 'text/plain',
                 'value' => trim($message->getBodyText()),
+            ];
+        }
+
+        if (!empty($message->getBodyHtml())) {
+            $this->_reqParams['content'][] = (object)[
+                'type' => 'text/html',
+                'value' => trim($message->getBodyHtml()),
             ];
         }
 
@@ -176,6 +187,16 @@ class SendGridTransport extends AbstractTransport
             $this->_reqParams['from'] = (object)['email' => key($from), 'name' => $from[key($from)]];
         } else {
             $this->_reqParams['from'] = (object)['email' => key($from)];
+        }
+
+        $replyTo = $message->getReplyTo();
+        if (!empty($replyTo)) {
+            if (key($replyTo) != $replyTo[key($replyTo)]) {
+                $this->_reqParams['reply_to'] = (object)['email' => key($replyTo), 'name' => $replyTo[key($replyTo)]];
+                
+            } else {
+                $this->_reqParams['reply_to'] = (object)['email' => key($replyTo)];
+            }        
         }
 
         $emails = [];
@@ -253,6 +274,7 @@ class SendGridTransport extends AbstractTransport
      */
     protected function _sendEmail()
     {
+
         $options = [
             'type' => 'json',
             'headers' => [
@@ -261,12 +283,12 @@ class SendGridTransport extends AbstractTransport
             ],
         ];
 
-        $response = $this->Client
-            ->post("{$this->getConfig('apiEndpoint')}/mail/send", json_encode($this->_reqParams), $options);
+        $response = $this->Client->post("{$this->getConfig('apiEndpoint')}/mail/send", json_encode($this->_reqParams), $options);
 
         $result = [];
         $result['apiResponse'] = $response->getJson();
         $result['responseCode'] = $response->getStatusCode();
+        $result['messageId'] = $response->getHeader('X-Message-Id') ?? '';
         $result['status'] = $result['responseCode'] == 202 ? 'OK' : 'ERROR';
         if (Configure::read('debug')) {
             $result['reqParams'] = $this->_reqParams;
