@@ -15,7 +15,7 @@ This branch is for use with CakePHP 5.0+. For CakePHP 4, please use cake-4.x bra
 This plugin has the following requirements:
 
 * CakePHP 5.0 or greater.
-* PHP 7.2 or greater.
+* PHP 8.1 or greater.
 
 ## Installation
 

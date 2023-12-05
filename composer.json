@@ -29,7 +29,7 @@
         "issues": "https://github.com/sprintcube/cakephp-sendgrid/issues"
     },
     "require": {
-        "php": ">=7.2",
+        "php": ">=8.1",
         "cakephp/cakephp": "^5.0.0"
     },
     "require-dev": {
