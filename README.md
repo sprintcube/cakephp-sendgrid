@@ -8,7 +8,14 @@
 
 This plugin provides email delivery using [SendGrid](https://sendgrid.com/).
 
-This branch is for use with CakePHP 5.0+. For CakePHP 4, please use cake-4.x branch.
+This branch is for use with **CakePHP 5.0+**. For other versions of CakePHP, please use the following version map.
+
+
+| SendGrid Plugin | Branch | CakePHP Core|
+| --- | --- | --- |
+| 1.x **[EOL]** | [cake-3.x](https://github.com/sprintcube/cakephp-sendgrid/tree/cake-3.x) | 3.4+ |
+| 4.x | [cake-4.x](https://github.com/sprintcube/cakephp-sendgrid/tree/cake-4.x) | 4.0+ |
+| 5.x (in progress) | [master](https://github.com/sprintcube/cakephp-sendgrid/tree/master) | 5.0+ |
 
 ## Requirements
 
@@ -171,7 +178,7 @@ You will need to login to your SendGrid Account and configure your domain and th
  https://app.sendgrid.com/settings/mail_settings/webhook_settings
 
 The return url needs to be set to 
-* https://YOUR DOMAIN/send-grid/webhook
+* https://YOURDOMAIN/send-grid/webhook
 
 
 The CSRF protection middleware needs to allow posts to the webhooks controller in Application.php
