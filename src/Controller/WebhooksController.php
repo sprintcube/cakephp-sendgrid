@@ -19,6 +19,19 @@ declare(strict_types=1);
  * 
  */
 
+/**
+ * SendGrid Plugin for CakePHP
+ * Copyright (c) SprintCube (https://www.sprintcube.com)
+ *
+ * Licensed under The MIT License
+ * For full copyright and license information, please see the LICENSE.md
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @copyright Copyright (c) SprintCube (https://www.sprintcube.com)
+ * @license   https://opensource.org/licenses/mit-license.php MIT License
+ * @link      https://github.com/sprintcube/cakephp-sendgrid
+ * @since     5.0.0
+ */
 
 namespace SendGrid\Controller;
 
@@ -75,7 +88,7 @@ class WebHooksController extends AppController
         if (isset($config['secure']) && $config['secure'] == 'true') {
             $this->request->getBody()->rewind();
             $payload = $this->request->getBody()->getContents();
-           // Log::debug($payload);
+            // Log::debug($payload);
 
             if (!isset($config['verification_key'])) {
                 if (isset($config['debug']) && $config['debug'] == 'true') {
@@ -85,7 +98,7 @@ class WebHooksController extends AppController
                 $this->viewBuilder()->setOption('serialize', "error");
                 return;
             }
-            
+
             $publicKey = PublicKey::fromString($config['verification_key']);
 
             $timestampedPayload = $this->request->getHeaderLine($this::TIMESTAMP) . $payload;
@@ -126,5 +139,4 @@ class WebHooksController extends AppController
         $this->set('OK', "OK");
         $this->viewBuilder()->setOption('serialize', "OK");
     }
-
 }

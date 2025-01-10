@@ -193,10 +193,9 @@ class SendGridTransport extends AbstractTransport
         if (!empty($replyTo)) {
             if (key($replyTo) != $replyTo[key($replyTo)]) {
                 $this->_reqParams['reply_to'] = (object)['email' => key($replyTo), 'name' => $replyTo[key($replyTo)]];
-                
             } else {
                 $this->_reqParams['reply_to'] = (object)['email' => key($replyTo)];
-            }        
+            }
         }
 
         $emails = [];
@@ -205,6 +204,10 @@ class SendGridTransport extends AbstractTransport
                 'email' => $toEmail,
                 'name' => $toName,
             ];
+        }
+
+        if (empty($emails['to'])) {
+            throw new SendGridApiException('Missing to email address.');
         }
 
         foreach ($message->getCc() as $ccEmail => $ccName) {
